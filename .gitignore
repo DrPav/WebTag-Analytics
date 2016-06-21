@@ -47,3 +47,4 @@ Temporary Items
 .apdisk
 dev/token_file
 dev/old_python/google credentials/client_secrets.json
+dev/.Rhistory
