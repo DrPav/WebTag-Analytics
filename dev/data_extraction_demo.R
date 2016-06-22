@@ -52,3 +52,43 @@ ga.query <- QueryBuilder(top_10_june_20)
 ga.data <- GetReportData(ga.query, token, split_daywise = T)
 
 #Get an error if there are no page views on a certain date, will have to loop each date manually
+
+#============================================================
+#Try looping through the days and adding a try statement to skip if there is no data
+library(lubridate)
+library(magrittr)
+
+queryPage <- function(page_url, query_date){
+  page_filter = paste0("ga:pagePath==", page_url)
+  my_query = Init(start.date = query_date,
+                  end.date = query_date,
+                  dimensions = "ga:date, ga:pageTitle",
+                  metrics = "ga:sessions,ga:pageviews",
+                  filters = page_filter,
+                  max.results = 10000,
+                  sort = "-ga:date",
+                  table.id = "ga:53872948") 
+  ga.query <- QueryBuilder(my_query)
+  ga.data <- GetReportData(ga.query, token, split_daywise = F)
+  return(ga.data)
+}
+start_date= "2016-05-01" %>% strptime("%Y-%m-%d")
+end_date =  "2016-05-20" %>% strptime("%Y-%m-%d") # No entries for the 17th
+time_diff = difftime(end_date, start_date, units = c("days")) %>% as.numeric()
+df1 = data.frame()
+for(x in 0:time_diff){
+  query_date =as.character(start_date + days(x))
+  page_url = "/government/collections/tempro"
+  print(query_date)
+  print("############")
+  result = try(queryPage(page_url, query_date), silent = T)
+  if(typeof(result) != "character"){
+    df1 = rbind(df1, result)
+  }
+  else{
+    print("No results returned for that query")
+  }
+}
+
+
+
