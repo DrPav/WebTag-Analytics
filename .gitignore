@@ -48,3 +48,5 @@ Temporary Items
 dev/token_file
 dev/old_python/google credentials/client_secrets.json
 dev/.Rhistory
+auth/token_file
+data/.~lock.historic may 2016.csv#
