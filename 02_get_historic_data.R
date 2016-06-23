@@ -94,12 +94,14 @@ for (page in pages){
 #Output to file
 write.csv(historic_data, output_file, row.names = F)
 
+
 #Testing
 #===========================
 #test = queryPage(pages[1], "2016-05-03") #PASS
 #test = queryMultipleDates(pages[1], "2016-05-03", "2016-05-20") #PASS
 #Can we go back a year?
 #test = queryMultipleDates(pages[1], "2015-05-03", "2015-05-10") #PASS (very slow)
+# historic_data %>% group_by(pageTitle) %>% summarise(total = sum(pageviews)) %>% arrange(desc(total) ) #PASS sensible results
 
 
 
