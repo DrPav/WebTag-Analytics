@@ -16,9 +16,8 @@ library(dygraphs)
 #url - the underlying url
 urls = read.csv("data/names.csv", stringsAsFactors = F)
 urls = urls[order(urls$ReadableName),]
-choices = as.list(urls$url) %>% setNames(urls$ReadableName)
-choices = setNames(choices, urls$ReadableName)
-choices = c(None = "no plot", choices)
+choices = as.list(urls$ReadableName) 
+choices = c("None", choices)
 
 
 
@@ -71,7 +70,7 @@ shinyUI(
       column(12, offset = 0, dygraphOutput("dygraph"))
     ),
     
-    #Title of table breaking data down by geographu
+    #Title of table breaking data down by geography
     fluidRow(
       column(12, offset = 0, h2("Breakdown by location"))
     ),
