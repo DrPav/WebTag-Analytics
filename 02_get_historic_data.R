@@ -58,7 +58,10 @@ queryMultipleDates <- function(page_url, start_date, end_date, wait = 0){
   df1 = data.frame()
   
   #Debugging shows that the token perhaps needs to be revalidated of wait in between each query
+  print("")
+  print(paste("waiting", as.character(wait), "seconds", "-", as.character(Sys.time())))
   Sys.sleep(wait)
+  
   print("###########################")
   print("Getting stats on next page")
   print(page_url)
@@ -88,12 +91,14 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 pages = sub("https://www.gov.uk", "", pages)
 
 #Loop over the urls and save as a single dataframe, then join them into one
-x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 10)
+x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 300)
 historic_data <- bind_rows(x)
 
 
 #Output to file
 write.csv(historic_data, output_file, row.names = F)
+
+print("Done")
 
 
 #Testing
@@ -105,5 +110,5 @@ write.csv(historic_data, output_file, row.names = F)
 # historic_data %>% group_by(pageTitle) %>% summarise(total = sum(pageviews)) %>% arrange(desc(total) ) #PASS sensible results
 
 #Lots of urls are missing form the final, test one of them
-#test = queryMultipleDates("/government/collections/tempro", "2016-05-01", "2016-05-14")
+#test = queryMultipleDates("/government/publications/webtag-tag-unit-m4-forecasting-and-uncertainty-november-2014", "2016-05-01", "2016-05-14")
 
