@@ -44,9 +44,10 @@ queryPage <- function(page_url, query_date){
 
 #Function to loop over a set of dates and return data frame of hits
 #For the given page in the time period specified
-queryMultipleDates <- function(page_url, start_date, end_date){
+queryMultipleDates <- function(page_url, start_date, end_date, wait = 0){
   #Page url is a string containng the url part after www.give.uk
   #dates are a string in format "YYYY-MM-DD"
+  #Wait is number of seconds to wait before performing query
   #Put dates as R Date
   start_date = strptime(start_date, "%Y-%m-%d")
   end_date = strptime(end_date, "%Y-%m-%d") 
@@ -55,6 +56,14 @@ queryMultipleDates <- function(page_url, start_date, end_date){
   time_diff = time_diff + 1 #Bugfix, add one to include the end date
   #Data Frame to store results
   df1 = data.frame()
+  
+  #Debugging shows that the token perhaps needs to be revalidated of wait in between each query
+  Sys.sleep(wait)
+  print("###########################")
+  print("Getting stats on next page")
+  print(page_url)
+  print("###########################")
+  ValidateToken(token)
   for(x in 0:time_diff){
     query_date =as.character(start_date + days(x))
     result = tryCatch(queryPage(page_url, query_date), silent = T, error = function(e) NULL )
@@ -79,7 +88,7 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 pages = sub("https://www.gov.uk", "", pages)
 
 #Loop over the urls and save as a single dataframe, then join them into one
-x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date)
+x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 10)
 historic_data <- bind_rows(x)
 
 
@@ -95,5 +104,6 @@ write.csv(historic_data, output_file, row.names = F)
 #test = queryMultipleDates(pages[1], "2015-05-03", "2015-05-10") #PASS (very slow)
 # historic_data %>% group_by(pageTitle) %>% summarise(total = sum(pageviews)) %>% arrange(desc(total) ) #PASS sensible results
 
-
+#Lots of urls are missing form the final, test one of them
+#test = queryMultipleDates("/government/collections/tempro", "2016-05-01", "2016-05-14")
 
