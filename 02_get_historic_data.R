@@ -52,20 +52,22 @@ queryMultipleDates <- function(page_url, start_date, end_date){
   end_date = strptime(end_date, "%Y-%m-%d") 
   #Calculate the time span in days
   time_diff = difftime(end_date, start_date, units = c("days")) %>% as.numeric()
+  time_diff = time_diff + 1 #Bugfix, add one to include the end date
   #Data Frame to store results
   df1 = data.frame()
   for(x in 0:time_diff){
     query_date =as.character(start_date + days(x))
-    result = try(queryPage(page_url, query_date), silent = T)
-    #Ignore queries that return a error message string instead of a data frame
-    #Error message strings are returned when there are no hits on the selected day
-    if(typeof(result) != "character"){ 
-      df1 = rbind(df1, result)
-      }
+    result = tryCatch(queryPage(page_url, query_date), silent = T, error = function(e) NULL )
+    #Returns NULL if there is an errror with the query
+    df1 = rbind(df1, result)
   }
-  #Add url to the dataframe
-  df1$url = page_url
-  return(df1)
+  #Check if any results were returned and format and return the df
+  if(length(df1) !=  0){
+    #Add url to the dataframe
+    df1$url = page_url
+    return(df1)
+  }
+  else return(NULL)
 }
 
 #==========================================
@@ -76,19 +78,9 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 #Remove the gov.uk prefix
 pages = sub("https://www.gov.uk", "", pages)
 
-#Loop over the urls and save as a single dataframe
-historic_data = data.frame()
-for (page in pages){
-  result = try(queryMultipleDates(page_url = page, start_date, end_date))
-  if(typeof(result) == "list"){#Ignore any errors
-    #Convert strings to factors to save memory
-    historic_data$url %<>% factor()
-    historic_data$pageTitle %<>% factor()
-    #Update dataframe
-    historic_data = rbind(historic_data, result)
-  }
-}
-
+#Loop over the urls and save as a single dataframe, then join them into one
+x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date)
+historic_data <- bind_rows(x)
 
 
 #Output to file
