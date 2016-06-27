@@ -77,6 +77,9 @@ queryMultipleDates <- function(page_url, start_date, end_date, wait = 0){
   if(length(df1) !=  0){
     #Add url to the dataframe
     df1$url = page_url
+    #Write to file as backup
+    temp_file = paste0("data/historic_bkp/", gsub(":", "", df1$pageTitle[1]), ".csv")
+    write.csv(df1, temp_file, row.names = F)
     return(df1)
   }
   else return(NULL)
@@ -91,7 +94,7 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 pages = sub("https://www.gov.uk", "", pages)
 
 #Loop over the urls and save as a single dataframe, then join them into one
-x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 300)
+x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 150)
 historic_data <- bind_rows(x)
 
 
@@ -104,7 +107,7 @@ print("Done")
 #Testing
 #===========================
 #test = queryPage(pages[1], "2016-05-03") #PASS
-#test = queryMultipleDates(pages[1], "2016-05-03", "2016-05-20") #PASS
+#test = queryMultipleDates(pages[1], "2016-05-03", "2016-05-13") #PASS
 #Can we go back a year?
 #test = queryMultipleDates(pages[1], "2015-05-03", "2015-05-10") #PASS (very slow)
 # historic_data %>% group_by(pageTitle) %>% summarise(total = sum(pageviews)) %>% arrange(desc(total) ) #PASS sensible results
