@@ -12,6 +12,7 @@ library(dygraphs) #Interactive time series graph
 library(dplyr) # Fast data manipulation
 library(tidyr)
 library(xts)
+library(magrittr) #Pipe operators %>% %<>% et.c.
 
 #Load the data that will be used
 #In future make this a RData object for faster loading and smaller filesize
@@ -36,14 +37,61 @@ ts_pageviews$date <- NULL
 ts_pageviews %<>% as.matrix()
 ts_pageviews %<>% as.xts(dateFormat='Date')
 
-# Define server logic required to draw a histogram
+#Historic geo data with readable names, again this should be done in a previous step outside the app
+historic_geo_data %<>% inner_join(urls)
+
+# Define server logic to make tables and plots
 shinyServer(function(input, output) {
    
   output$rankingsTable <- renderDataTable(rankings_data, options = list(pageLength = 10))
   
   output$dygraph <- renderDygraph({
-    dygraph(ts_pageviews[, "WebTAG appraisal tables"], main = "Predicted Deaths/Month") %>%
+    c1 = ts_pageviews[, input$page1]
+    c2 = ts_pageviews[, input$page2]
+    c3 = ts_pageviews[, input$page3]
+    plot_data = cbind(c1, c2, c3)
+    dygraph(plot_data, main = "Daily WebTAG hits") %>%
       dyRangeSelector()
   })
+  
+  geoData1 = reactive({
+    #TODO still need to filter by date outputted by dygraph
+    x = filter(historic_geo_data, ReadableName == input$page1)
+    if(input$geography == "cities"){
+      x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    else {
+      x %<>% select(Country ,pageviews) %>% group_by(Country) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    arrange(x, desc(pageviews))
+  })
+  
+  geoData2 = reactive({
+    #TODO still need to filter by date outputted by dygraph
+    x = filter(historic_geo_data, ReadableName == input$page2)
+    if(input$geography == "cities"){
+      x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    else {
+      x %<>% select(Country ,pageviews) %>% group_by(Country) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    arrange(x, desc(pageviews))
+  })
+  
+  geoData3 = reactive({
+    #TODO still need to filter by date outputted by dygraph
+    x = filter(historic_geo_data, ReadableName == input$page3)
+    if(input$geography == "cities"){
+      x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    else {
+      x %<>% select(Country ,pageviews) %>% group_by(Country) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
+    }
+    arrange(x, desc(pageviews))
+  })
+  
+  output$geoTable1 <- renderDataTable(geoData1(), options = list(pageLength = 10))
+  output$geoTable2 <- renderDataTable(geoData2(), options = list(pageLength = 10))
+  output$geoTable3 <- renderDataTable(geoData3(), options = list(pageLength = 10))
   
 })

@@ -56,11 +56,11 @@ shinyUI(
       ),
       fluidRow(
         column(width = 4, selectInput("page1", "Page 1", choices,
-                                      selected = "/government/publications/webtag-tag-overview")),
+                                      selected = "WebTAG data book")),
         column(width = 4, selectInput("page2", "Page 2", choices,
-                                      selected = "no plot")),
+                                      selected = "None")),
         column(width = 4, selectInput("page3", "Page 3", choices,
-                                      selected = "no plot"))
+                                      selected = "None"))
       )
       
     ),
@@ -84,7 +84,9 @@ shinyUI(
     ),
     #Table of results by country of city
     fluidRow(
-      column(12, offset = 0, dataTableOutput("geoTable"))
+      column(4, dataTableOutput("geoTable1")),
+      column(4, dataTableOutput("geoTable2")),
+      column(4, dataTableOutput("geoTable3"))
     )
     
   )
