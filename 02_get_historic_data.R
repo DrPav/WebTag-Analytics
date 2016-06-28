@@ -97,6 +97,12 @@ pages = sub("https://www.gov.uk", "", pages)
 x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 150)
 historic_data <- bind_rows(x)
 
+##Optionally creatic the historic data df from all the files in the backup folder
+##Used as i had to run the above lapply loop in batches over a few days
+#data_files = list.files("data/historic_bkp")
+#data_files = paste0("data/historic_bkp/", data_files)
+#historic_data <- lapply(data_files, read.csv) %>% bind_rows()
+
 
 #Output to file
 write.csv(historic_data, output_file, row.names = F)
@@ -115,3 +121,5 @@ print("Done")
 #Lots of urls are missing form the final, test one of them
 #test = queryMultipleDates("/government/publications/webtag-tag-unit-m4-forecasting-and-uncertainty-november-2014", "2016-05-01", "2016-05-14")
 
+#Check the outputted file
+#test = read.csv(output_file)
