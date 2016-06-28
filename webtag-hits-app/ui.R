@@ -16,6 +16,7 @@ library(dygraphs)
 #url - the underlying url
 cleanTitles = read.csv("data/pageTitles.csv", stringsAsFactors = F)
 choices = cleanTitles$pageTitle
+choices = choices[order(choices)]
 
 
 
@@ -54,11 +55,11 @@ shinyUI(
       ),
       fluidRow(
         column(width = 4, selectInput("page1", "Page 1", choices,
-                                      selected = "All")),
+                                      selected = "--All--")),
         column(width = 4, selectInput("page2", "Page 2", choices,
-                                      selected = "None")),
+                                      selected = "--None--")),
         column(width = 4, selectInput("page3", "Page 3", choices,
-                                      selected = "None"))
+                                      selected = "--None--"))
       )
       
     ),

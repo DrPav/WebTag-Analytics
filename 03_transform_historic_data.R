@@ -34,8 +34,8 @@ historic_geo_data$Country %<>% factor()
 
 #Create the rankings table
 #==============================
-#Rankings for 2016
-rankings_data = historic_geo_data %>% filter(date >= "2016-01-01") %>% group_by(pageTitle, url) %>% 
+#Rankings for all since Nov 2015
+rankings_data = historic_geo_data %>% group_by(pageTitle, url) %>% 
   summarise(pageviews = sum(pageviews)) %>% as.data.frame() %>% arrange(desc(pageviews))
 rankings_data$rank = seq(from = 1, to = length(rankings_data$pageTitle))
 rankings_data = rankings_data[,c(4,1,2,3)] # Put rank first
@@ -71,11 +71,10 @@ time_data$date = as.character(time_data$date)
 ts_pageviews = time_data %>% select(date, pageTitle, pageviews) %>% spread(pageTitle, pageviews)
 rownames(ts_pageviews) <- ts_pageviews$date
 ts_pageviews$date <- NULL
-ts_pageviews$All <- rowSums(ts_pageviews) #Create a total accross all pages
+ts_pageviews["--All--"] <- rowSums(ts_pageviews) #Create a total accross all pages
 ts_pageviews %<>% as.matrix()
 ts_pageviews %<>% as.xts(dateFormat='Date')
 
-test = apply.daily(ts_pageviews, sum)
 
 #write.csv(all_combos, "data/historic_time_series.csv", row.names = F)
 #===========================================================================
@@ -87,5 +86,5 @@ save(historic_geo_data, rankings_data, ts_pageviews, file = "webtag-hits-app/dat
 #================================================================
 readablePages <- filter(historic_geo_data, pageTitle != "Bad request - 400 - GOV.UK") %>% select(pageTitle, url) %>% distinct()
 #Add a none and all option for drop down boxes
-readablePages = rbind(data.frame(pageTitle = c("None", "All"), url = c("NA", "NA")),readablePages)
+readablePages = rbind(data.frame(pageTitle = c("--None--", "--All--"), url = c("NA", "NA")),readablePages)
 write.csv(readablePages, "webtag-hits-app/data/pageTitles.csv", row.names = F)

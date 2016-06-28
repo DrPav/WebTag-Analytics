@@ -35,7 +35,13 @@ shinyServer(function(input, output) {
   
   geoData1 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, pageTitle == input$page1)
+    if (input$page1 == "--All--") {
+      x = historic_geo_data
+    }
+    else{
+      x = filter(historic_geo_data, pageTitle == input$page1)
+    }
+    
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }
@@ -47,7 +53,12 @@ shinyServer(function(input, output) {
   
   geoData2 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, pageTitle == input$page2)
+    if (input$page2 == "--All--") {
+      x = historic_geo_data
+    }
+    else{
+      x = filter(historic_geo_data, pageTitle == input$page2)
+    }
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }
@@ -59,7 +70,12 @@ shinyServer(function(input, output) {
   
   geoData3 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, pageTitle == input$page3)
+    if (input$page3 == "--All--") {
+      x = historic_geo_data
+    }
+    else{
+      x = filter(historic_geo_data, pageTitle == input$page3)
+    }
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }
