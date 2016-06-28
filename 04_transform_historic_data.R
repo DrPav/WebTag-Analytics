@@ -7,9 +7,13 @@ library(xts)
 library(magrittr)
 
 #Load data
-data_loc = "data/historic nov15 - may16.csv"
-df1 = read.csv(data_loc)
+##Create the df from all the files in the backup folder
+data_files = list.files("data/historic_bkp")
+data_files = paste0("data/historic_bkp/", data_files)
+df1 <- lapply(data_files, read.csv, colClasses = c("character", "character", "character", 
+                                                   "integer", "integer", "character")) %>% bind_rows()
 df1$date = ymd(df1$date)
+
 #Cleanup pagetitle
 df1 %<>% filter(pageTitle != "Bad request - 400 - GOV.UK")
 df1$pageTitle <- gsub(":", "", df1$pageTitle)
@@ -51,7 +55,7 @@ time_diff = difftime(last_date, first_date, units = c("days")) %>% as.numeric()
 all_dates = seq(from = 0, to = time_diff, by = 1)
 all_dates = first_date + days(all_dates) 
 #All urls in dataframe
-all_urls = levels(df2$url)
+all_urls = unique(df2$url)
 #All possible combinations of dates and urls
 all_combos = expand.grid(date = all_dates, url = all_urls) %>% as.data.frame()
 #Join on the titles for completness

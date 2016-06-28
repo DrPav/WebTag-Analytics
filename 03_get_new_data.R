@@ -3,22 +3,27 @@ library(lubridate)
 library(magrittr)
 library(dplyr)
 
+#Update the dataset
+
+#First load the data to see what the most recent date is
+
+data_location = "data/historic_bkp"
+
+data_files = list.files(data_location)
+data_files = paste0(data_location, "/",  data_files)
+historic_data <- lapply(data_files, read.csv) %>% bind_rows()
+historic_data$date = ymd(historic_data$date)
+
+last_date = max(historic_data$date)
+rm(historic_data)
+first_day = (last_date + days(1))%>% as.character()
+last_day = (Sys.Date() - days(1)) %>% as.character()
+
+url_list_file = "input/webtag urls.txt"
+
 #Authentication
 load("auth/token_file")
 ValidateToken(token)
-
-#==========================================
-#INPUTS
-#==========================================
-#Pages to get stats for - this will be read from a file
-#Extracted urls using www.import.io
-url_list_file = "input/webtag urls.txt"
-
-#Data collection period "YYYY-MM-DD" - data is inclusive of these dates
-start_date= "2015-11-01"
-end_date =  "2016-05-31" 
-
-#output_file = "data/historic nov15 - may16.csv"
 
 #==========================================
 #FUNCTIONS
@@ -78,7 +83,9 @@ queryMultipleDates <- function(page_url, start_date, end_date, wait = 0){
     #Add url to the dataframe
     df1$url = page_url
     #Write to file as backup
-    temp_file = paste0("data/historic_bkp/", gsub(":", "", df1$pageTitle[1]), ".csv")
+    writeableUrl = gsub("[[:punct:]]", "", page_url)
+    writeableUrl = gsub(" ", "", writeableUrl)
+    temp_file = paste0(data_location, "/",writeableUrl, " ", start_date, " ", end_date, ".csv")
     write.csv(df1, temp_file, row.names = F)
     return(df1)
   }
@@ -94,24 +101,5 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 pages = sub("https://www.gov.uk", "", pages)
 
 #Loop over the urls and save as a single dataframe, then join them into one
-x <- lapply(pages, queryMultipleDates, start_date = start_date, end_date = end_date, wait = 150)
+x <- lapply(pages, queryMultipleDates, start_date = first_day, end_date = last_day, wait = 30)
 
-
-
-
-print("Done")
-
-
-#Testing
-#===========================
-#test = queryPage(pages[1], "2016-05-03") #PASS
-#test = queryMultipleDates(pages[1], "2016-05-03", "2016-05-13") #PASS
-#Can we go back a year?
-#test = queryMultipleDates(pages[1], "2015-05-03", "2015-05-10") #PASS (very slow)
-# historic_data %>% group_by(pageTitle) %>% summarise(total = sum(pageviews)) %>% arrange(desc(total) ) #PASS sensible results
-
-#Lots of urls are missing form the final, test one of them
-#test = queryMultipleDates("/government/publications/webtag-tag-unit-m4-forecasting-and-uncertainty-november-2014", "2016-05-01", "2016-05-14")
-
-#Check the outputted file
-#test = read.csv(output_file)
