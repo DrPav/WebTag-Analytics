@@ -15,30 +15,9 @@ library(xts)
 library(magrittr) #Pipe operators %>% %<>% et.c.
 
 #Load the data that will be used
-#In future make this a RData object for faster loading and smaller filesize
-time_data = read.csv("data/historic_time_series.csv")
-load("data/historic_geo_data.RData")
 
-#Create the rankings table
-#This step should be moved the data transformation stage
-rankings_data = historic_geo_data %>% filter(date >= "2016-01-01") %>% group_by(pageTitle, url) %>% 
-  summarise(pageviews = sum(pageviews)) %>% as.data.frame() %>% arrange(desc(pageviews))
-rankings_data$rank = seq(from = 1, to = length(rankings_data$pageTitle))
-rankings_data = rankings_data[,c(4,1,2,3)] # Put rank first
+load("data/dashboard_data.RData")
 
-#Convert to R time series
-#Again to be done in a outside of the app - need to reduce Url to somethig more readable
-time_data$date = as.character(time_data$date)
-urls = read.csv("data/names.csv", stringsAsFactors = F)
-time_data %<>% inner_join(urls)
-ts_pageviews = time_data %>% select(date, ReadableName, pageviews) %>% spread(ReadableName, pageviews)
-rownames(ts_pageviews) <- ts_pageviews$date
-ts_pageviews$date <- NULL
-ts_pageviews %<>% as.matrix()
-ts_pageviews %<>% as.xts(dateFormat='Date')
-
-#Historic geo data with readable names, again this should be done in a previous step outside the app
-historic_geo_data %<>% inner_join(urls)
 
 # Define server logic to make tables and plots
 shinyServer(function(input, output) {
@@ -56,7 +35,7 @@ shinyServer(function(input, output) {
   
   geoData1 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, ReadableName == input$page1)
+    x = filter(historic_geo_data, pageTitle == input$page1)
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }
@@ -68,7 +47,7 @@ shinyServer(function(input, output) {
   
   geoData2 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, ReadableName == input$page2)
+    x = filter(historic_geo_data, pageTitle == input$page2)
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }
@@ -80,7 +59,7 @@ shinyServer(function(input, output) {
   
   geoData3 = reactive({
     #TODO still need to filter by date outputted by dygraph
-    x = filter(historic_geo_data, ReadableName == input$page3)
+    x = filter(historic_geo_data, pageTitle == input$page3)
     if(input$geography == "cities"){
       x %<>% select(City, pageviews) %>% group_by(City) %>% summarise(pageviews = sum(pageviews)) %>% as.data.frame()
     }

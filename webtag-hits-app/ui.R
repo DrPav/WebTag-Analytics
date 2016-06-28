@@ -14,10 +14,8 @@ library(dygraphs)
 #Data file has two columns
 #ReadableName - Name shown to user
 #url - the underlying url
-urls = read.csv("data/names.csv", stringsAsFactors = F)
-urls = urls[order(urls$ReadableName),]
-choices = as.list(urls$ReadableName) 
-choices = c("None", choices)
+cleanTitles = read.csv("data/pageTitles.csv", stringsAsFactors = F)
+choices = cleanTitles$pageTitle
 
 
 
@@ -56,7 +54,7 @@ shinyUI(
       ),
       fluidRow(
         column(width = 4, selectInput("page1", "Page 1", choices,
-                                      selected = "WebTAG data book")),
+                                      selected = "All")),
         column(width = 4, selectInput("page2", "Page 2", choices,
                                       selected = "None")),
         column(width = 4, selectInput("page3", "Page 3", choices,

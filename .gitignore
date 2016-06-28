@@ -51,3 +51,4 @@ dev/.Rhistory
 auth/token_file
 data/.~lock.historic may 2016.csv#
 *.Rhistory
+*.csv
