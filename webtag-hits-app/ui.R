@@ -9,6 +9,7 @@
 
 library(shiny)
 library(dygraphs)
+library(shinythemes)
 
 #Choices of what urls can be selected.
 #Data file has two columns
@@ -22,7 +23,7 @@ choices = choices[order(choices)]
 
 # Define UI for application. Fluid row uses the bootstrap grid that has width 12
 shinyUI(
-  fluidPage(
+  fluidPage(theme = shinytheme("flatly"),
     # Application title
     column(12, h1("WebTAG Hits Dashboard"), align = "center"),
     
