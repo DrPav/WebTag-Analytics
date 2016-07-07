@@ -10,7 +10,7 @@
 library(shiny) # Dashboard functions
 library(dygraphs) #Interactive time series graph
 library(dplyr) # Fast data manipulation
-library(tidyr)
+#library(tidyr)
 library(xts)
 library(magrittr) #Pipe operators %>% %<>% et.c.
 
@@ -85,6 +85,11 @@ shinyServer(function(input, output) {
     arrange(x, desc(pageviews))
   })
   
+  output$t1 <- renderUI(h4(input$page1))
+  output$t2 <- renderUI(h4(input$page2))
+  output$t3 <- renderUI(h4(input$page3))
+    
+    
   output$geoTable1 <- renderDataTable(geoData1(), options = list(pageLength = 10))
   output$geoTable2 <- renderDataTable(geoData2(), options = list(pageLength = 10))
   output$geoTable3 <- renderDataTable(geoData3(), options = list(pageLength = 10))

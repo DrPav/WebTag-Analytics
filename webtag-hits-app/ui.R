@@ -29,7 +29,7 @@ shinyUI(
     
     #Some descriptive text under the title
     fluidRow(
-      column(12, "Some text giving caveats about sampling and instructions", offset = 0)
+      column(12, "Explore how popular webtag pages are based on number of web hits", offset = 0)
     ),
     
     #Title of table
@@ -47,12 +47,12 @@ shinyUI(
     
     #Title of Timer Series Plot section
     fluidRow(
-      column(12, offset = 0, h2("Interactive Time Series"))
+      column(12, offset = 0, h2("Hits over time"))
     ),
     #Control Panel - Three drop downs spread evenly accross the page
     wellPanel(
       fluidRow(
-        "Select the pages you want to plot (up to 3). Select the timeperiod using the mini plot", br(), br()
+        "Select up to 3 pages to view the popularity over time", br(), br()
       ),
       fluidRow(
         column(width = 4, selectInput("page1", "Page 1", choices,
@@ -84,9 +84,9 @@ shinyUI(
     ),
     #Table of results by country of city
     fluidRow(
-      column(4, dataTableOutput("geoTable1")),
-      column(4, dataTableOutput("geoTable2")),
-      column(4, dataTableOutput("geoTable3"))
+      column(4, uiOutput("t1"), br(), dataTableOutput("geoTable1")),
+      column(4, uiOutput("t2"), br(), dataTableOutput("geoTable2")),
+      column(4, uiOutput("t3"), br(), dataTableOutput("geoTable3"))
     )
     
   )
