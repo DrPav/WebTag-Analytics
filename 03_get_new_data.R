@@ -11,7 +11,8 @@ data_location = "data/historic_bkp"
 
 data_files = list.files(data_location)
 data_files = paste0(data_location, "/",  data_files)
-historic_data <- lapply(data_files, read.csv) %>% bind_rows()
+historic_data <- lapply(data_files, read.csv, colClasses = c("character", "character", "character", 
+                                                             "integer", "integer", "character")) %>% bind_rows()
 historic_data$date = ymd(historic_data$date)
 
 last_date = max(historic_data$date)
@@ -101,5 +102,7 @@ pages = read.csv(url_list_file, header = F, stringsAsFactors = F)$V1
 pages = sub("https://www.gov.uk", "", pages)
 
 #Loop over the urls and save as a single dataframe, then join them into one
-x <- lapply(pages, queryMultipleDates, start_date = first_day, end_date = last_day, wait = 30)
+x <- lapply(pages, queryMultipleDates, start_date = first_day, end_date = last_day, wait = 10)
+
+
 
