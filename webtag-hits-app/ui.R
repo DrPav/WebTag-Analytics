@@ -10,12 +10,16 @@
 library(shiny)
 library(dygraphs)
 library(shinythemes)
+library(rdrop2)
 
+#Access to dropbox
+token <- readRDS("auth/webtagdroptoken.rds")
 #Choices of what urls can be selected.
 #Data file has two columns
 #ReadableName - Name shown to user
 #url - the underlying url
-cleanTitles = read.csv("data/pageTitles.csv", stringsAsFactors = F)
+drop_get("webtag-app/pageTitles.csv", dtoken = token, overwrite = T)
+cleanTitles = read.csv("pageTitles.csv", stringsAsFactors = F)
 choices = cleanTitles$pageTitle
 choices = choices[order(choices)]
 

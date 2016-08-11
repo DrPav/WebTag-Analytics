@@ -13,10 +13,17 @@ library(dplyr) # Fast data manipulation
 #library(tidyr)
 library(xts)
 library(magrittr) #Pipe operators %>% %<>% et.c.
+library(rdrop2)
+source("functions.R")
+
+#Access to dropbox
+token <- readRDS("auth/webtagdroptoken.rds")
 
 #Load the data that will be used
-
+drop_get("webtag-app/dashboard_data.RData", dtoken = token, overwrite = T)
 load("data/dashboard_data.RData")
+
+rankings_data <- makeRankingsTable(historic_geo_data)
 
 
 # Define server logic to make tables and plots

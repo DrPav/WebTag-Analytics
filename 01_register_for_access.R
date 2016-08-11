@@ -1,4 +1,5 @@
 library(RGoogleAnalytics)
+library(rdrop2)
 
 # Authorize the Google Analytics account
 # This need not be executed in every session once the token object is created 
@@ -11,3 +12,7 @@ token <- Auth(client.id, client.secret = "XXXXXXXXX")
 
 # Save the token object for future sessions
 save(token,file = "auth/token_file")
+
+#DROPBOX - just need to do once like google analytics
+token <- drop_auth()
+saveRDS(token, "auth/webtagdroptoken.rds")
