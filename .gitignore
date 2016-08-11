@@ -52,3 +52,6 @@ auth/token_file
 data/.~lock.historic may 2016.csv#
 *.Rhistory
 *.csv
+webtag-db-app/auth/token_file
+webtag-hits-app/auth/webtagdroptoken.rds
+webtag-db-app/auth/webtagdroptoken.rds
